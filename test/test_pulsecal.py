@@ -8,7 +8,7 @@
 
 import unittest
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 import auspex.pulsecal.phase_estimation as pe
 import auspex.pulsecal.optimize_amplitude as oa
@@ -99,20 +99,28 @@ class AnalyzeRabiTestCase(unittest.TestCase):
         data = np.ndarray(xpts.shape,dtype=np.float)
         for i in range(0,len(xpts)):
             data[i]=ar.rabif(xpts[i],offset,amp,freq,phase)
-            data[i] += np.random.randn()*.01
-            
-        plt.figure()
-        plt.plot(xpts,data)
+            #data[i] += np.random.randn()*.01
+                    
+        piAmp,beta = ar.analyze_rabi_amp( data)
         
-        beta = ar.analyze_rabi_amp( data)
         
         fit = np.ndarray(xpts.shape,dtype=np.float)
         for i in range(0,len(xpts)):
             fit[i] = ar.rabif(xpts[i],beta[0],beta[1],beta[2],beta[3])
+        
+        self.assertAlmostEqual(beta[0],offset,places=3)
+        self.assertAlmostEqual(beta[1],amp,places=3)
+        self.assertAlmostEqual(beta[2],freq,places=3)
+        self.assertAlmostEqual(beta[3],phase,places=3)
+        
+        '''
+        plt.figure()
+        plt.plot(xpts,data)
         plt.plot(xpts,fit,'r')
         plt.figure()
         plt.plot(xpts,fit-data)
         plt.show()
+        '''
                 
         
         

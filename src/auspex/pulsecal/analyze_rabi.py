@@ -30,10 +30,8 @@ def analyze_rabi_amp(data):
 
     # use largest FFT frequency component to seed Rabi frequency
     yfft = np.fft.fft(data)
-    freqpos = np.argmax(np.abs( yfft[1:np.floor((len(yfft)-1)/2)] ))
-    print(freqpos)
+    freqpos = np.argmax(np.abs( yfft[1:np.int((len(yfft)-1)/2)] ))
     frabi = 0.5*np.maximum(freqpos,1)/xpts[len(xpts)-1];
-    print(frabi)
     
     # initial guess for amplitude is max - min
     amp = 0.5*(np.max(data) - np.min(data));
@@ -41,11 +39,10 @@ def analyze_rabi_amp(data):
     phase = 0
     
     # check sign of amp
-    if data[np.floor((len(yfft)-1)/2)] > offset:
+    if data[np.int((len(yfft)-1)/2)] > offset:
         amp = -amp
     
     beta,_ = curve_fit(rabif,xpts,data,method='lm')
-    print('Beta: ',beta)
 
     #The frequency tells us something about what a pi should calibrate to
     frabi = np.abs(beta[2])
@@ -54,5 +51,5 @@ def analyze_rabi_amp(data):
     # The phase tell us somethign about the offset
     offsetPhase = beta[3];
     
-    return beta
+    return piAmp,beta
     
