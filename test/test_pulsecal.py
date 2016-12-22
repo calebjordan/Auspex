@@ -8,9 +8,11 @@
 
 import unittest
 import numpy as np
+import matplotlib.pyplot as plt
 
 import auspex.pulsecal.phase_estimation as pe
 import auspex.pulsecal.optimize_amplitude as oa
+import auspex.pulsecal.analyze_rabi as ar
 
 def simulate_measurement(amp, target, numPulses):
     
@@ -78,6 +80,43 @@ class OptimizeAmplitudeTestCase(unittest.TestCase):
         # routine
         self.assertAlmostEqual(amp_out,0.3400,places=4)
 
+class AnalyzeRabiTestCase(unittest.TestCase):
+
+    def test_analyze_rabi(self):
+        
+        numsteps = 40; #should be even
+        stepsize = 2/numsteps
+        
+        xpts = np.arange(-(numsteps/2)*stepsize,-stepsize+stepsize,stepsize)
+        xpts = np.append(xpts,np.arange(stepsize,(numsteps/2)*stepsize+stepsize,
+        stepsize))
+        
+        amp = .2
+        offset = 3.0
+        freq = 1.
+        phase = np.pi/4
+        
+        data = np.ndarray(xpts.shape,dtype=np.float)
+        for i in range(0,len(xpts)):
+            data[i]=ar.rabif(xpts[i],offset,amp,freq,phase)
+            data[i] += np.random.randn()*.01
+            
+        plt.figure()
+        plt.plot(xpts,data)
+        
+        beta = ar.analyze_rabi_amp( data)
+        
+        fit = np.ndarray(xpts.shape,dtype=np.float)
+        for i in range(0,len(xpts)):
+            fit[i] = ar.rabif(xpts[i],beta[0],beta[1],beta[2],beta[3])
+        plt.plot(xpts,fit,'r')
+        plt.figure()
+        plt.plot(xpts,fit-data)
+        plt.show()
+                
+        
+        
+        #self.assertAlmostEqual(amp_out,0.3400,places=4)
 
 if __name__ == '__main__':
     unittest.main()
