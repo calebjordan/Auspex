@@ -49,6 +49,5 @@ def optimize_amplitude( amp_init, direction, target, update_data, numShots=1):
             else:
                 print('Hit max iteration count');
             done = True;
-    print('Amp',amp)
     
     return amp
