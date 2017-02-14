@@ -10,3 +10,4 @@ from .integrator import KernelIntegrator
 from .io import WriteToHDF5, DataBuffer, ProgressBar
 from .plot import Plotter, MeshPlotter, XYPlotter
 from .stream_selectors import AlazarStreamSelector, X6StreamSelector
+from .singleshot import SingleShot

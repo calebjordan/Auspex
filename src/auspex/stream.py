@@ -427,6 +427,7 @@ class OutputConnector(object):
     # a descriptor, that it may pass
     def set_descriptor(self, descriptor):
         self.descriptor = descriptor
+        self.update_descriptors()
 
     def add_output_stream(self, stream):
         logger.debug("Adding output stream '%s' to output connector %s.", stream, self)
