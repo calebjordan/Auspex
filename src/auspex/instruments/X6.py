@@ -46,6 +46,8 @@ class X6Channel(DigitizerChannel):
         self.dsp_channel    = 0
         self.channel     = (1,0,0)
 
+        self.num_records_received = 0
+
         self.dtype = np.float64
 
         if settings_dict:
@@ -97,7 +99,6 @@ class X6(Instrument):
             self._lib = libx6.X6()
 
         # pass thru functions
-        self.acquire    = self._lib.acquire
         self.stop       = self._lib.stop
         self.disconnect = self._lib.disconnect
 
@@ -121,6 +122,12 @@ class X6(Instrument):
         self._chan_to_rsocket.clear()
         self._chan_to_wsocket.clear()
         self._lib.disconnect()
+
+    def acquire(self):
+        for channel in self.channels:
+            channel.num_records_received = 0
+        self._lib.acquire() 
+        self.num_records = self.lib.nbr_segments*self.lib.nbr_waveforms*self.lib.nbr_round_robins
 
     def set_all(self, settings_dict):
         # Call the non-channel commands
@@ -156,6 +163,9 @@ class X6(Instrument):
             return False
         if self._lib.get_is_running():
             return False
+        for channel in self.channels:
+            if channel.num_records_received < self.num_records:
+                return False
         return True
 
     def get_socket(self, channel):
@@ -184,6 +194,8 @@ class X6(Instrument):
     def receive_data(self, channel, oc):
         # push data from a socket into an OutputConnector (oc)
         self.last_timestamp = datetime.datetime.now()
+        # update the number of records received for this channel
+        channel.num_records_received += 1
         # wire format is just: [size, buffer...]
         sock = self._chan_to_rsocket[channel]
         # TODO receive 4 or 8 bytes depending on sizeof(size_t)
