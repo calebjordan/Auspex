@@ -14,8 +14,8 @@ awg_dir  = os.path.join(curr_dir, "AWG" )
 cfg_file = os.path.join(curr_dir, "test_config.yml")
 
 # Dummy mode
-import auspex.globals
-auspex.globals.auspex_dummy_mode = True
+import auspex.config as config
+config.auspex_dummy_mode = True
 
 # config_location.config(cfg_file)
 

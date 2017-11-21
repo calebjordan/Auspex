@@ -147,10 +147,10 @@ class QubitExpFactory(object):
     will override some of the config values depending on the experiment being run."""
 
     @staticmethod
-    def run(meta_file=None, expname=None, calibration=False, cw_mode=False, repeats=None):
+    def run(meta_file=None, meas_file=None, expname=None, calibration=False, cw_mode=False, repeats=None):
         """This passes all of the parameters given to the *create* method
         and then runs the experiment immediately."""
-        exp = QubitExpFactory.create(meta_file=meta_file, expname=expname,
+        exp = QubitExpFactory.create(meta_file=meta_file, meas_file=meas_file, expname=expname,
                                      calibration=calibration, cw_mode=cw_mode,
                                     repeats=repeats)
         exp.run_sweeps()
@@ -169,8 +169,6 @@ class QubitExpFactory(object):
         number of segments gleaned from the meta_info"""
 
         # Figure out which config file we should use, defaulting to the supplied argument
-        if not meas_file:
-            meas_file = config.find_meas_file() 
         settings = config.load_meas_file(meas_file)
 
         # This is generally the behavior we want
